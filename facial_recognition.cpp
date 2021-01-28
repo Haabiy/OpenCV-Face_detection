@@ -1,60 +1,49 @@
 #include "facial_recognition.h"
 
-void Detect_face(Mat& image, CascadeClassifier &forface, CascadeClassifier &nested, double &scale ){
+void Detection(Mat& inputimage, CascadeClassifier &for_face, CascadeClassifier &for_eyes){
 
-vector<Rect>faces;
+vector<Rect>faces,eyes;
 
-Mat outputimage, inputimage;
-inputimage=image;
+Mat outputimage;
 
-double fx = 1/scale;
-
-cv::resize(inputimage, outputimage,outputimage.size(),fx,fx);
-
-// from the opencv data
-double scaleFactor = 1.1;
-int minNeighbors = 3;
-int flags=0;
+//outputimage.size() = 640 x 480
+cv::resize(inputimage, outputimage, outputimage.size(),1, 1);
 
 //Detects faces
-forface.detectMultiScale(inputimage, faces,scaleFactor, minNeighbors, flags, Size(5, 5));
+for_face.detectMultiScale(inputimage, faces);
 
 //faces.size() = Number of faces on the video or webcam
  for ( size_t i = 0; i < faces.size(); i++ )
     {
-        Rect rec = faces[i];
-        // Color of the rectangle
+        // Color of the rectangle, in BGR format
         Scalar facecolor = Scalar(0, 255, 0);
 
-        //Draws a rectangle
-        rectangle( image, cvPoint(cvRound(rec.x*scale), cvRound(rec.y*scale)),
-                    cvPoint(cvRound((rec.x + rec.width-1)*scale),
-                    cvRound((rec.y + rec.height-1)*scale)), facecolor, 3, 8, 0);
+        //Draws a rectangle, 3 is the intensity of the rectangle color
+        rectangle( inputimage, cvPoint(cvRound(faces[i].x), cvRound(faces[i].y)),
+                    cvPoint(cvRound((faces[i].x + faces[i].width)),
+                    cvRound((faces[i].y + faces[i].height))), facecolor, 3);
 
-
-        vector<Rect> nestedObjs;
-        Mat smallImgROI;
-        smallImgROI = outputimage(rec);
+        Mat ROI = outputimage(faces[i]);
+        Point center;
         int radius;
-        // color for the circles
+
+        // color for the circles, Blue
         Scalar eyescolor = Scalar(255, 0, 0);
 
-        nested.detectMultiScale( smallImgROI, nestedObjs, 1.1, 2, 0 , Size(3, 3) );
-        Point center;
+        for_eyes.detectMultiScale(ROI, eyes);
 
         // Draw circles around your eyes
-        for ( size_t j = 0; j < nestedObjs.size(); j++ )
+        for ( size_t j = 0; j < eyes.size(); j++ )
         {
-            Rect nrec = nestedObjs[j];
-            center.x = cvRound((rec.x + nrec.x + nrec.width*0.5)*scale);
-            center.y = cvRound((rec.y + nrec.y + nrec.height*0.5)*scale);
-            radius = cvRound((nrec.width + nrec.height)*0.25*scale);
-            circle( image, center, radius, eyescolor, 3, 8, 0 );
 
+            center.x = cvRound((faces[i].x + eyes[j].x + eyes[j].width*0.5));
+            center.y = cvRound((faces[i].y + eyes[j].y + eyes[j].height*0.5));
+            radius = cvRound((eyes[j].width + eyes[j].height)*0.25);
+            circle( inputimage, center, radius, eyescolor, 3);
         }
     }
 
-    imshow( "Face-Detection", image );
+    imshow( "Detecting...", inputimage );
     waitKey(1);
 }
 

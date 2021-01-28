@@ -12,6 +12,6 @@
 using namespace cv;
 using namespace std;
 
-void Detect_face(Mat &image, cv::CascadeClassifier& forface, cv::CascadeClassifier &nested, double &scale );
+void Detection(Mat &image, cv::CascadeClassifier& for_face, cv::CascadeClassifier &for_eyes);
 
 #endif
