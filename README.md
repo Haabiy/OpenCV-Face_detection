@@ -2,4 +2,5 @@
 - Detects your face
 - Detects your eyes
 
-![Face_detection](https://user-images.githubusercontent.com/76060198/106168791-f9da0f80-618e-11eb-83f8-c2a1678d5404.PNG)
+![Face detection](https://user-images.githubusercontent.com/76060198/106379821-e0afa980-63ae-11eb-818f-728df4f25a0b.gif)
+
